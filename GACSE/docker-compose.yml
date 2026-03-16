@@ -34,8 +34,8 @@ services:
 
   frontend:
     build:
-      context: ..
-      dockerfile: GACSE FRONT END/Dockerfile
+      context: ../GACSE FRONT END
+      dockerfile: Dockerfile
     container_name: gacse-frontend
     ports:
       - "80:80"
