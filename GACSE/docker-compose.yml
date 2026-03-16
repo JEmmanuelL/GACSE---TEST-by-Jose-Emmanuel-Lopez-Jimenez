@@ -32,5 +32,15 @@ services:
       sqlserver:
         condition: service_healthy
 
+  frontend:
+    build:
+      context: ..
+      dockerfile: GACSE FRONT END/Dockerfile
+    container_name: gacse-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
 volumes:
   sqlserver-data:
