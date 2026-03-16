@@ -21,3 +21,6 @@ build/
 # OS
 Thumbs.db
 .DS_Store
+
+# Documentación de estudio (Privado)
+ESTUDIO_PROYECTO.md
