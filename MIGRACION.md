@@ -1,35 +1,40 @@
-# MIGRACION.md - Estrategia de Migración GACSE
+# MIGRACION.md - Gestión de Base de Datos (EF Core & SQL)
 
-Este documento detalla el pensamiento estratégico y la planificación técnica para migrar el sistema **GACSE** de un entorno de desarrollo/prueba a un entorno de producción o para la transición desde un sistema legado.
+Este documento describe el proceso técnico de migración y actualización de la base de datos del proyecto **GACSE** utilizando **Entity Framework Core** y scripts **SQL** nativos.
 
-## 1. Visión Estratégica
-La migración no es solo mover datos; es asegurar la continuidad del servicio hospitalario. Nuestra estrategia se basa en:
-- **Cero tiempo de inactividad (Zero Downtime):** Mediante el uso de contenedores y despliegues Blue-Green.
-- **Integridad de Datos:** Validaciones rigurosas pre y post migración.
-- **Escalabilidad:** Transparencia en la transición hacia infraestructuras en la nube (Azure/AWS).
+## 1. Migraciones de Entity Framework Core
+El proyecto utiliza el enfoque *Code-First* para definir el esquema de la base de datos. 
 
-## 2. Fases de la Migración
+### Aplicación de Migraciones
+Las migraciones se aplican automáticamente al iniciar la aplicación en `Program.cs` mediante:
+```csharp
+db.Database.Migrate();
+```
+Esto asegura que las tablas `Medicos`, `Pacientes`, `Citas` y `HorariosMedicos` se creen o actualicen según las clases definidas en la capa de **Domain**.
 
-### Fase 1: Preparación y Auditoría
-- **Auditoría de Datos Legados:** Identificación de inconsistencias en registros de médicos y pacientes.
-- **Sanitización:** Limpieza de formatos de teléfonos y correos electrónicos.
-- **Mapeo de Especialidades:** Asegurar que las especialidades del sistema anterior coincidan con nuestro enum `EspecialidadMedica`.
+### Comandos de Desarrollo
+Si se realizan cambios en las entidades de dominio, se deben generar nuevas migraciones:
+```bash
+dotnet ef migrations add NombreDeLaMigracion --project Infrastructure --startup-project GACSE
+```
 
-### Fase 2: Infraestructura y Base de Datos
-- **Automatización con Migraciones:** El sistema utiliza `Entity Framework Core Migrations` para garantizar que el esquema sea idéntico en todos los entornos.
-- **Despliegue de Stored Procedures:** Automatización de la carga de lógica SQL (`sp_ValidarDisponibilidadMedico`, `sp_ObtenerAgendaMedico`) al iniciar el contenedor.
-- **Dockerización:** Uso de `docker-compose` para asegurar que las dependencias de red y volúmenes de datos estén aisladas y sean portables.
+## 2. Stored Procedures y Scripts SQL
+Debido a que EF Core tiene limitaciones para manejar ciertos tipos de lógica compleja o para optimizar consultas de reporte, el proyecto utiliza Stored Procedures nativos ubicados en:
+`Infrastructure/StoredProcedures/*.sql`
 
-### Fase 3: Ejecución (Estrategia de Carga)
-- **Carga Inicial (Seed Data):** Migración de catálogos maestros (Médicos y Especialidades).
-- **Migración Delta:** Importación de pacientes y citas activas en una ventana de mantenimiento mínima.
-- **Validación Automática:** Scripts post-carga para verificar que no existan solapamientos de citas tras la importación.
+### Automatización de Scripts
+Para evitar ejecuciones manuales, el servidor de API lee y ejecuta automáticamente todos los archivos `.sql` encontrados en esa carpeta durante el arranque (`Program.cs`):
+1. Detecta archivos `.sql`.
+2. Lee el contenido (scripts `CREATE OR ALTER PROCEDURE`).
+3. Los ejecuta en SQL Server mediante `db.Database.ExecuteSqlRaw(sql)`.
 
-## 3. Mitigación de Riesgos y Rollback
-- **Plan de Contingencia:** Si la migración falla en más del 5%, se activa el rollback inmediato al sistema anterior.
-- **Backups:** Generación de snapshots de SQL Server antes de iniciar la migración delta.
-- **Logs de Auditoría:** Registro detallado de cada fila migrada para rastrear discrepancias.
+SPs incluidos actualmente:
+- `sp_ValidarDisponibilidadMedico`: Lógica de choque de horarios.
+- `sp_ObtenerAgendaMedico`: Reporte de agenda diaria consolidado.
 
-## 4. Próximos Pasos (V2)
-- Implementación de **Event Sourcing** para sincronización en tiempo real con sistemas externos.
-- Exposición de webhooks para notificaciones de cambios en la agenda durante la fase de convivencia de sistemas.
+## 3. Datos de Ejemplo (Seed Data)
+El proyecto incluye un mecanismo de *Seeding* para asegurar que la base de datos tenga datos funcionales inmediatamente:
+- Médicos pre-cargados con especialidades asignadas.
+- Horarios de consulta configurados.
+- Pacientes de prueba.
+Esto se gestiona a través de la configuración `OnModelCreating` en el `AppDbContext` o mediante lógica de inicialización en el startup.
