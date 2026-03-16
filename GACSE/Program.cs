@@ -45,26 +45,43 @@ var app = builder.Build();
 // Aplicar migraciones automáticamente y ejecutar stored procedures
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    var db = services.GetRequiredService<AppDbContext>();
 
-    // Ejecutar stored procedures
     try
     {
+        logger.LogInformation("Iniciando aplicación de migraciones de base de datos...");
+        db.Database.Migrate();
+        logger.LogInformation("Migraciones aplicadas con éxito.");
+
+        // Validación extra: Verificar si hay datos (Seed Data)
+        if (!db.Medicos.Any())
+        {
+            logger.LogWarning("¡ATENCIÓN! No se detectaron médicos en la base de datos tras la migración. El Seed Data podría haber fallado.");
+        }
+        else
+        {
+            var count = db.Medicos.Count();
+            logger.LogInformation("Validación de datos exitosa. Se encontraron {Count} médicos en la BD.", count);
+        }
+
+        // Ejecutar stored procedures
         var spPath = Path.Combine(AppContext.BaseDirectory, "Infrastructure", "StoredProcedures");
         if (Directory.Exists(spPath))
         {
+            logger.LogInformation("Ejecutando Stored Procedures desde: {Path}", spPath);
             foreach (var sqlFile in Directory.GetFiles(spPath, "*.sql"))
             {
                 var sql = File.ReadAllText(sqlFile);
                 db.Database.ExecuteSqlRaw(sql);
+                logger.LogInformation("Stored Procedure ejecutado: {FileName}", Path.GetFileName(sqlFile));
             }
         }
     }
     catch (Exception ex)
     {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogWarning(ex, "No se pudieron ejecutar los stored procedures al iniciar. Se ejecutarán después.");
+        logger.LogError(ex, "Ocurrió un error crítico durante la inicialización de la base de datos.");
     }
 }
 
