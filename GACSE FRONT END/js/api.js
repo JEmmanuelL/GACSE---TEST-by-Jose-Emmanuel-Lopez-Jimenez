@@ -47,6 +47,11 @@ const ApiService = {
         try {
             return text ? JSON.parse(text) : null;
         } catch (e) {
+            // Si no es JSON y es un código de éxito, algo está mal configurado
+            if (response.ok) {
+                console.error('La API devolvió un formato no válido:', text);
+                return []; // Retornar arreglo vacío para evitar errores de .forEach
+            }
             return text;
         }
     },
