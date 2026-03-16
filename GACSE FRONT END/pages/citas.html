@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Cita - GACSE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../index.html">GACSE Médica</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="medicos.html">Médicos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="pacientes.html">Pacientes</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="citas.html">Agendar Cita</a></li>
+                    <li class="nav-item"><a class="nav-link" href="agenda.html">Agenda del Día</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <!-- Paso 1: Selección de Médico y Paciente -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-10">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-info text-dark p-4 border-0">
+                        <h3 class="fw-bold mb-0"><i class="bi bi-calendar-plus me-2"></i>Nueva Cita Médica</h3>
+                        <p class="mb-0 opacity-75">Seleccione médico y paciente para ver la disponibilidad semanal.</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="alertContainer"></div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Médico</label>
+                                <select class="form-select" id="medicoId" onchange="Citas.onMedicoChange()">
+                                    <option value="">Seleccione Médico...</option>
+                                </select>
+                                <div id="medicoInfo" class="small text-muted mt-1"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Paciente</label>
+                                <select class="form-select" id="pacienteId">
+                                    <option value="">Seleccione Paciente...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Motivo de la Consulta</label>
+                                <input type="text" class="form-control" id="motivo" placeholder="Describa brevemente...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 2: Cards de días de la semana -->
+        <div id="diasContainer" class="row justify-content-center mb-4 d-none">
+            <div class="col-lg-10">
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                    <h4 class="fw-bold mb-0"><i class="bi bi-calendar-week me-2"></i>Disponibilidad Semanal</h4>
+                    <div class="d-flex align-items-center gap-2">
+                        <select class="form-select form-select-sm" id="mesSelector" style="width:auto" onchange="Citas.onMonthChange()"></select>
+                        <select class="form-select form-select-sm" id="semanaSelector" style="width:auto" onchange="Citas.onWeekChange()"></select>
+                    </div>
+                </div>
+                <div id="diasCards" class="row g-2 flex-nowrap">
+                    <!-- Cards de días se generan dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 3: Horarios de servicio del día seleccionado -->
+        <div id="horariosContainer" class="row justify-content-center d-none">
+            <div class="col-lg-10">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-dark text-white p-3">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-clock me-2"></i>Horarios de Servicio — <span id="diaSeleccionadoLabel"></span></h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="slotsCards" class="row g-2">
+                            <!-- Slots se generan dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div id="confirmHeader" class="modal-header bg-info text-dark">
+                    <h5 class="modal-title fw-bold" id="confirmTitle"><i class="bi bi-question-circle me-2"></i>Confirmar Cita</h5>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div id="confirmBody">
+                        <p class="fs-5" id="confirmMessage"></p>
+                    </div>
+                    <div id="confirmSuccess" class="d-none">
+                        <i class="bi bi-check-circle-fill text-success display-3"></i>
+                        <p class="fs-5 fw-bold text-success mt-3">Cita Reservada Exitosamente</p>
+                        <p id="confirmSuccessDetail" class="text-muted"></p>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center" id="confirmFooter">
+                    <button type="button" class="btn btn-secondary px-4" id="confirmCancelBtn" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary px-4" id="confirmAcceptBtn">Aceptar</button>
+                </div>
+                <div class="modal-footer justify-content-center d-none" id="confirmSuccessFooter">
+                    <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Conflicto -->
+    <div class="modal fade" id="conflictoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Horario Ocupado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Lo sentimos, este horario se acaba de ocupar.</p>
+                    <p class="fw-bold mb-2">Horarios disponibles sugeridos:</p>
+                    <div id="modalSugerencias" class="d-flex flex-wrap gap-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1090" id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/citas.js"></script>
+</body>
+</html>

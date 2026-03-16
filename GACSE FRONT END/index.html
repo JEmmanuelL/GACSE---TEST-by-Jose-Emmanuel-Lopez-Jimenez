@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GACSE - Mini Agenda Médica</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">GACSE Médica</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/medicos.html">Médicos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/pacientes.html">Pacientes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/citas.html">Agendar Cita</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/agenda.html">Agenda del Día</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h1 class="display-4 fw-bold text-primary mb-4">Bienvenido a GACSE</h1>
+                <p class="lead text-muted mb-5">Sistema integral para la gestión de citas médicas, administración de doctores y pacientes.</p>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm hover-card">
+                            <div class="card-body p-4">
+                                <div class="icon-circle bg-primary-light text-primary mb-3 mx-auto">
+                                    <i class="bi bi-person-badge"></i>
+                                </div>
+                                <h3 class="h5">Gestión de Médicos</h3>
+                                <p class="small text-muted">Administra el personal médico, especialidades y horarios de atención.</p>
+                                <a href="pages/medicos.html" class="btn btn-outline-primary btn-sm mt-2">Ir a Médicos</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm hover-card">
+                            <div class="card-body p-4">
+                                <div class="icon-circle bg-success-light text-success mb-3 mx-auto">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <h3 class="h5">Pacientes</h3>
+                                <p class="small text-muted">Registro y seguimiento de información de contacto de pacientes.</p>
+                                <a href="pages/pacientes.html" class="btn btn-outline-success btn-sm mt-2">Ir a Pacientes</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm hover-card">
+                            <div class="card-body p-4">
+                                <div class="icon-circle bg-info-light text-info mb-3 mx-auto">
+                                    <i class="bi bi-calendar-check"></i>
+                                </div>
+                                <h3 class="h5">Citas</h3>
+                                <p class="small text-muted">Agenda nuevas consultas validando conflictos de horario.</p>
+                                <a href="pages/citas.html" class="btn btn-outline-info text-dark btn-sm mt-2">Agendar</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm hover-card">
+                            <div class="card-body p-4">
+                                <div class="icon-circle bg-warning-light text-warning mb-3 mx-auto">
+                                    <i class="bi bi-journal-text"></i>
+                                </div>
+                                <h3 class="h5">Agenda Diaria</h3>
+                                <p class="small text-muted">Consulta la agenda de actividades diaria para cada médico.</p>
+                                <a href="pages/agenda.html" class="btn btn-outline-warning text-dark btn-sm mt-2">Ver Agenda</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center text-muted py-4 border-top mt-auto">
+        <div class="container">
+            <small>&copy; 2024 GACSE - Prueba Técnica .NET 8</small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
