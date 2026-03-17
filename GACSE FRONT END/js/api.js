@@ -31,7 +31,21 @@ const ApiService = {
                     throw { status: 409, data };
                 }
                 
-                const errorMessage = data && data.mensaje ? data.mensaje : `Error ${response.status}: ${response.statusText}`;
+                let errorMessage = `Error ${response.status}: ${response.statusText}`;
+                
+                // Si la API devolvió un objeto con mensaje o errores de validación
+                if (data) {
+                    if (data.mensaje) {
+                        errorMessage = data.mensaje;
+                    } else if (data.errors) {
+                        // Formatear errores de validación de ASP.NET Core
+                        errorMessage = 'Errores de validación: ' + 
+                            Object.entries(data.errors)
+                                .map(([field, msgs]) => `${field}: ${msgs.join(', ')}`)
+                                .join(' | ');
+                    }
+                }
+                
                 throw new Error(errorMessage);
             }
 

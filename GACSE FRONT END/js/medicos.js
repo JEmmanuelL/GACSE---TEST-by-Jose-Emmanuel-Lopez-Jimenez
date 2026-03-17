@@ -75,12 +75,19 @@ const Medicos = {
 
     async save() {
         const id = document.getElementById('medicoId').value;
+        const especialidadMapa = {
+            'MedicinaGeneral': 0,
+            'Cardiologia': 1,
+            'Cirugia': 2,
+            'Pediatria': 3,
+            'Ginecologia': 4
+        };
+
         const medicoData = {
             nombre: document.getElementById('nombre').value,
-            especialidad: document.getElementById('especialidad').value,
-            // En este frontend simplificado, enviamos horarios para Lunes-Viernes
+            especialidad: especialidadMapa[document.getElementById('especialidad').value],
             horarios: [1, 2, 3, 4, 5].map(dia => ({
-                diaSemana: dia,
+                diaSemana: dia, // Lunes=1, Martes=2, etc. coincide con DayOfWeek en .NET
                 horaInicio: document.getElementById('horaInicio').value + ':00',
                 horaFin: document.getElementById('horaFin').value + ':00'
             }))
@@ -91,7 +98,7 @@ const Medicos = {
         UI.showLoading(true);
         try {
             if (id) {
-                await ApiService.put(`/medicos/${id}`, { id: parseInt(id), ...medicoData });
+                await ApiService.put(`/medicos/${id}`, medicoData);
                 UI.showAlert('Médico actualizado con éxito', 'success');
             } else {
                 await ApiService.post('/medicos', medicoData);
