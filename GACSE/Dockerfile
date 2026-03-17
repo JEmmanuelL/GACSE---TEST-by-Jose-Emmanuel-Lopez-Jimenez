@@ -21,6 +21,7 @@ RUN dotnet publish "GACSE.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Etapa final: runtime + archivos publicados
 FROM base AS final
+RUN apt-get update && apt-get install -y tzdata && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/publish .
 

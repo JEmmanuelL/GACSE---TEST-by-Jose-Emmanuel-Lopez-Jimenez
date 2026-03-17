@@ -5,6 +5,7 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=GacsE_2024!
+      - TZ=America/Mexico_City
     ports:
       - "1433:1433"
     volumes:
