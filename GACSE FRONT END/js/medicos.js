@@ -81,8 +81,8 @@ const Medicos = {
             // En este frontend simplificado, enviamos horarios para Lunes-Viernes
             horarios: [1, 2, 3, 4, 5].map(dia => ({
                 diaSemana: dia,
-                horaInicio: document.getElementById('horaInicio').value,
-                horaFin: document.getElementById('horaFin').value
+                horaInicio: document.getElementById('horaInicio').value + ':00',
+                horaFin: document.getElementById('horaFin').value + ':00'
             }))
         };
 
