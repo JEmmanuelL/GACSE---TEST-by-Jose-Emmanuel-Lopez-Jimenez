@@ -186,8 +186,13 @@ const Citas = {
         const med = this.selectedMedico;
         if (!med) return;
 
+        const mapaDias = { 'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6 };
         const horarioDias = new Map();
-        med.horarios.forEach(h => horarioDias.set(h.diaSemana, h));
+        med.horarios.forEach(h => {
+            let dia = h.diaSemana;
+            if (typeof dia === 'string') dia = mapaDias[dia];
+            horarioDias.set(dia, h);
+        });
 
         // Determine if doctor works weekends
         const worksWeekend = horarioDias.has(0) || horarioDias.has(6);
